@@ -7,7 +7,7 @@ paepe = {}
 with open('projeto-paepe.csv') as file:
     csv_file = csv.DictReader(file)
     for line in csv_file:
-        paepe[line['Projeto']] = line['Tipo']
+        paepe[line['Projeto']] = int(line['Tipo'])
 
 df_candidatos['Nome'] = df_candidatos['Nome'].apply(lambda name: name[:-1] if name[-1] == ' ' else name)
 df_pontuacao = pandas.merge(df_candidatos,df_assit_est, on='Nome', how='left')
@@ -30,7 +30,7 @@ def is_number(n):
 df_pontuacao['Coeficiente normalizado'] = df_pontuacao['Coeficiente normalizado'].apply(lambda cr: float(cr.replace(',','.')) if is_number(cr.replace(',','.')) else 5)
 df_pontuacao['Coeficiente normalizado'] = df_pontuacao['Coeficiente normalizado'].apply(lambda cr: cr if cr <= 10 else cr-10)
 
-def calc_score(projeto, renda, cr):
+def calcula_pontuacao(projeto, renda, cr):
     ae_point = incode_point[renda] if not pandas.isna(renda) else 1
     if paepe[projeto] == 1:
         score = 0.3*ae_point+0.7*cr
@@ -38,7 +38,7 @@ def calc_score(projeto, renda, cr):
         score = 0.7*ae_point+0.3*cr
     return score
 
-df_pontuacao['Pontuação'] = df_pontuacao.apply(lambda row: calc_score(row['Projeto'], row['Faixa de Renda'], row['Coeficiente normalizado']), axis=1)
+df_pontuacao['Pontuação'] = df_pontuacao.apply(lambda row: calcula_pontuacao(row['Projeto'], row['Faixa de Renda'], row['Coeficiente normalizado']), axis=1)
 
 df_pontuacao = df_pontuacao.sort_values(['Projeto', 'Pontuação'], ascending=[True, False])
 
