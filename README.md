@@ -6,7 +6,7 @@ As bibliotecas abaixo precisam ser instaladas para executar o script:
 * pandas
 * csv
 
-Para instalar a biblioteca *pandas* utilize o comando abaixo:
+Para instalar a biblioteca *pandas* utilize o comando abaixo:****
 ```console
 pip install pandas
 ```
@@ -50,6 +50,11 @@ Os campos devem ser:
 * *curso*: nome do curso [**string**]
 * *coeficiente normalizado*: coeficiente normalizado [**float**]
 * *e-mail*: e-mail [**string**]
+
+As informações podem ser obtidas via o [site](https://www.sistemasweb.ufes.br/proplan/pib/) do PIB:
+* *Acesso ao sistema* -> *Acessar* -> *Candidatos*
+* Em **Título do Projeto:** selecione **Todos**
+* Selecione o resultado mostrado na tela, incluindo o cabeçalho, e cole em uma planilha. Exporte a planilha como arquivo CSV.
 
 ## projeto-paepe.csv
 Arquivo CSV contendo informações dos projetos cadastrados no formato:
