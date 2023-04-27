@@ -6,7 +6,7 @@ As bibliotecas abaixo precisam ser instaladas para executar o script:
 * pandas
 * csv
 
-Para instalar a biblioteca *pandas* utilize o comando abaixo:****
+Para instalar a biblioteca *pandas* utilize o comando abaixo:
 ```console
 pip install pandas
 ```
