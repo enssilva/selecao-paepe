@@ -1,4 +1,4 @@
-# Selecao PaEPE
+# Seleção PaEPE
 Script para gerar a pontuação dos bolsistas do PaEPE - UFES
 
 # Biblioteca python
