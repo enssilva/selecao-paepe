@@ -4,36 +4,56 @@ Script para gerar a pontuação dos bolsistas do PaEPE - UFES
 # Biblioteca python
 As bibliotecas abaixo precisam ser instaladas para executar o script:
 * pandas
-* csv
 
 Para instalar a biblioteca *pandas* utilize o comando abaixo:
-```console
+```bash
 pip install pandas
 ```
 
 # Executar o script
 Para executar o script utilize o comando abaixo:
-```console
+```bash
 python3 main.py
+```
+Se quiser algumas informações sobre parâmetros de entrada do script utilize a opção **-h**:
+```console
+user@host:~$ python3 main.py -h
+usage: main.py [-h] [-di DATA_INICIO] [-df DATA_FIM] [--candidatos CANDIDATOS] [--assistencia_estudantil ASSISTENCIA_ESTUDANTIL] [--projeto_paepe PROJETO_PAEPE]
+
+Gera a lista dos alunos inscritos com suas respectivas notas e agrupados por projeto (pontuação.csv)
+
+options:
+  -h, --help            show this help message and exit
+  -di DATA_INICIO, --data_inicio DATA_INICIO
+                        Data de início do período de inscrição no formato dd/mm/yyyy para filtrar inscritos
+  -df DATA_FIM, --data_fim DATA_FIM
+                        Data final do período de inscrição no formato dd/mm/yyyy para filtrar inscritos
+  --candidatos CANDIDATOS
+                        Nome do arquivo com a lista de candidatos contendo as seguintes colunas: CPF, Projeto, Nome, Curso, Coeficiente normalizado, E-mail
+  --assistencia_estudantil ASSISTENCIA_ESTUDANTIL
+                        Nome do arquivo com a lista de assistência estudantil contendo as seguintes colunas: Matrícula, CPF, Nome, PPI, Faixa de Renda
+  --projeto_paepe PROJETO_PAEPE
+                        Nome do arquivo com a lista dos projetos contendo as seguintes colunas: Projeto, Tipo
 ```
 
 # Entrada
-## assistencia-estudantil.csv
+## assistencia_estudantil.csv
 Arquivo CSV contendo informações sobre faixa de renda e PPI dos alunos:
 
-|Matrícula|Nome|PPI|Faixa de Renda|
-|---|---|---|---|
-|9999999999|João da Silva|NÃO|Até 0,5 sm.|
+|Matrícula|CPF|Nome|PPI|Faixa de Renda|
+|---|---|---|---|---|
+|9999999999|111.111.111-11|João da Silva|NÃO|menor que 0,5 SM|
 
 Os campos devem ser:
 * *matricula*: número da matrícula [**int**]
+* *cpf*: CPF com ponto e traço [**string**]
 * *nome*: nome completo [**string**]
 * *ppi*: SIM ou NÃO [**string**]
 * *faixa de renda*: [**string**]
-  * Até 0,5 sm.
-  * De 0,5 a 1,0 sm.
-  * De 1,0 a 1,5 sm.
-  * Acima de 1,5 sm.
+  * menor que 0,5 SM
+  * maior que 0,5 e menor ou igual a 1,0 SM
+  * maior que 1,0 e menor ou igual a 1,5 SM
+  * maior que 1,5 SM
   * Não informado
 
 ## candidatos.csv
@@ -56,7 +76,7 @@ As informações podem ser obtidas via o [site](https://www.sistemasweb.ufes.br/
 * Em **Título do Projeto:** selecione **Todos**
 * Selecione o resultado mostrado na tela, incluindo o cabeçalho, e cole em uma planilha. Exporte a planilha como arquivo CSV.
 
-## projeto-paepe.csv
+## projeto_paepe.csv
 Arquivo CSV contendo informações dos projetos cadastrados no formato:
 |Projeto|Tipo|
 |---|---|
@@ -68,6 +88,8 @@ Os campos devem ser:
 
 # Saída
 ## pontuação.csv
-|CPF|Nome|Projeto|Pontuação|PPI|Coeficiente normalizado|Matrícula|Curso|Faixa de Renda|E-mail|
-|---|---|---|---|---|---|---|---|---|---|
-|999.999.999-99|João da Silva|Projeto ABC|4,39|NÃO|5,3|9999999999|Curso XYZ|Até 0,5 sm.|joao@silva.com|
+
+Arquivo CSV contendo a pontuação de cada candidato com as informações utilizadas para calcular a pontuação:
+|PaEPE|CPF|Nome|Projeto|Pontuação|PPI|Coeficiente normalizado|Pontos (renda)|Faixa de Renda|Matrícula|Curso|E-mail|Data de cadastramento|OBS|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|1|999.999.999-99|João da Silva|Projeto ABC|4,39|NÃO|5,3|3|menor que 0,5 SM|9999999999|Curso XYZ|joao@silva.com|01/04/99||
