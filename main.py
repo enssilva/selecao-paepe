@@ -9,13 +9,22 @@ def is_number(n):
         return False
     return True
 
+# incode_point = {
+#     'menor que 0,5 SM': 4,
+#     'maior que 0,5 e menor ou igual a 1,0 SM': 3,
+#     'maior que 1,0 e menor ou igual a 1,5 SM': 2,
+#     'maior que 1,5 SM': 1,
+#     'Não informado': 1,
+#     'NaN': 1
+# }
 incode_point = {
-    'menor que 0,5 SM': 4,
-    'maior que 0,5 e menor ou igual a 1,0 SM': 3,
-    'maior que 1,0 e menor ou igual a 1,5 SM': 2,
-    'maior que 1,5 SM': 1,
+    'até 0,5 salário mínimo': 4,
+    'entre 0,5 e 1 salário mínimo': 3,
+    'entre 1 e 1,5 salário mínimo': 2,
+    'acima de 1,5 salário mínimo': 1,
     'Não informado': 1,
-    'NaN': 1
+    'NaN': 1,
+    '-': 1
 }
 def calcula_pontuacao(paepe, renda, crn):
     ae_point = incode_point[renda] if not pandas.isna(renda) else 1
@@ -34,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('-df', '--data_fim', type=str, required=False,
                         help='Data final do período de inscrição no formato dd/mm/yyyy para filtrar inscritos')
     parser.add_argument('--candidatos', type=str, required=False, default='candidatos.csv',
-                        help='Nome do arquivo com a lista de candidatos contendo as seguintes colunas: CPF, Projeto, Nome, Curso, Coeficiente normalizado, E-mail')
+                        help='Nome do arquivo com a lista de candidatos contendo as seguintes colunas: CPF, Projeto, Nome, Curso, Coeficiente normalizado, Data de cadastramento, E-mail')
     parser.add_argument('--assistencia_estudantil', type=str, required=False, default='assistencia_estudantil.csv',
                         help='Nome do arquivo com a lista de assistência estudantil contendo as seguintes colunas: Matrícula, CPF, Nome, PPI, Faixa de Renda')
     parser.add_argument('--projeto_paepe', type=str, required=False, default='projeto_paepe.csv',
@@ -94,11 +103,10 @@ if __name__ == '__main__':
     df_pontuacao['Coeficiente normalizado'] = df_pontuacao['Coeficiente normalizado'].apply(lambda point: str(point).replace('.',','))
 
     # elimina candidados fora do prazo de inscrição
-    # df_pontuacao.loc[(df_pontuacao['Data de cadastramento'] >= datetime.strptime(DATA_INSCRICAO_INICIO, '%d/%m/%Y')) & (df_pontuacao['Data de cadastramento'] <= datetime.strptime(DATA_INSCRICAO_FIM, '%d/%m/%Y'))]
     if args.data_inicio is not None:
-        df_pontuacao.loc[df_pontuacao['Data de cadastramento'] >= DATA_INSCRICAO_INICIO]
+        df_pontuacao = df_pontuacao.loc[df_pontuacao['Data de cadastramento'] >= DATA_INSCRICAO_INICIO]
     if args.data_fim is not None:
-        df_pontuacao.loc[df_pontuacao['Data de cadastramento'] <= DATA_INSCRICAO_FIM]
+        df_pontuacao = df_pontuacao.loc[df_pontuacao['Data de cadastramento'] <= DATA_INSCRICAO_FIM]
 
     # seleciona as colunas que serão exportadas
     df_pontuacao = df_pontuacao[['PaEPE', 'CPF', 'Nome', 'Projeto', 'Pontuação', 'PPI', 'Coeficiente normalizado', 'Pontos (renda)', 'Faixa de Renda', 'Matrícula', 'Curso', 'E-mail', 'Data de cadastramento', 'OBS']]
