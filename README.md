@@ -40,15 +40,14 @@ options:
 ## assistencia_estudantil.csv
 Arquivo CSV contendo informações sobre faixa de renda e PPI dos alunos:
 
-|Matrícula|CPF|Nome|PPI|Faixa de Renda|
-|---|---|---|---|---|
-|9999999999|111.111.111-11|João da Silva|NÃO|menor que 0,5 SM|
+|CPF|Nome|TIPO_COTA|FAIXA_RENDA|
+|---|---|---|---|
+|111.111.111-11|João da Silva|NÃO|menor que 0,5 SM|
 
 Os campos devem ser:
-* *matricula*: número da matrícula [**int**]
 * *cpf*: CPF com ponto e traço [**string**]
 * *nome*: nome completo [**string**]
-* *ppi*: SIM ou NÃO [**string**]
+* *tipo de cota*: descrição do tipo de cota [**string**]
 * *faixa de renda*: [**string**]
   * menor que 0,5 SM
   * maior que 0,5 e menor ou igual a 1,0 SM

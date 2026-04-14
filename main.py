@@ -9,14 +9,6 @@ def is_number(n):
         return False
     return True
 
-# incode_point = {
-#     'menor que 0,5 SM': 4,
-#     'maior que 0,5 e menor ou igual a 1,0 SM': 3,
-#     'maior que 1,0 e menor ou igual a 1,5 SM': 2,
-#     'maior que 1,5 SM': 1,
-#     'Não informado': 1,
-#     'NaN': 1
-# }
 incode_point = {
     'até 0,5 salário mínimo': 4,
     'entre 0,5 e 1 salário mínimo': 3,
@@ -24,7 +16,8 @@ incode_point = {
     'acima de 1,5 salário mínimo': 1,
     'Não informado': 1,
     'NaN': 1,
-    '-': 1
+    '-': 1,
+    'indefinido': 1
 }
 def calcula_pontuacao(paepe, renda, crn):
     ae_point = incode_point[renda] if not pandas.isna(renda) else 1
@@ -45,7 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('--candidatos', type=str, required=False, default='candidatos.csv',
                         help='Nome do arquivo com a lista de candidatos contendo as seguintes colunas: CPF, Projeto, Nome, Curso, Coeficiente normalizado, Data de cadastramento, E-mail')
     parser.add_argument('--assistencia_estudantil', type=str, required=False, default='assistencia_estudantil.csv',
-                        help='Nome do arquivo com a lista de assistência estudantil contendo as seguintes colunas: Matrícula, CPF, Nome, PPI, Faixa de Renda')
+                        help='Nome do arquivo com a lista de assistência estudantil contendo as seguintes colunas: CPF, Nome, TIPO_COTA, FAIXA_RENDA')
     parser.add_argument('--projeto_paepe', type=str, required=False, default='projeto_paepe.csv',
                         help='Nome do arquivo com a lista dos projetos contendo as seguintes colunas: Projeto, Tipo')
     
@@ -64,7 +57,8 @@ if __name__ == '__main__':
     # lê o arquivo com os candidatos
     df_candidatos = pandas.read_csv(args.candidatos, parse_dates=['Data de cadastramento'], date_format="%d/%m/%Y")
     # lê o arquivo da assistência estudantil
-    df_assit_est = pandas.read_csv(args.assistencia_estudantil, dtype={'Matrícula': 'Int32'})
+    # df_assit_est = pandas.read_csv(args.assistencia_estudantil, dtype={'Matrícula': 'Int32'})
+    df_assit_est = pandas.read_csv(args.assistencia_estudantil)
     # lê o arquivo com os projetos e seus tipos
     df_projeto_paepe = pandas.read_csv(args.projeto_paepe)
 
@@ -87,13 +81,13 @@ if __name__ == '__main__':
     df_pontuacao['Coeficiente normalizado'] = df_pontuacao['Coeficiente normalizado'].apply(lambda crn: crn if crn <= 10 else crn-10)
 
     # adiciona uma coluna OBS para indicar se algum aluno possui CRN == 0
-    df_pontuacao['OBS'] = df_pontuacao.apply(lambda row: 'Verificar CPF e matrícula do estudante. CRN == 0' if row['Coeficiente normalizado'] == 0 else '', axis=1)
+    df_pontuacao['OBS'] = df_pontuacao.apply(lambda row: 'Verificar CPF do estudante. CRN == 0' if row['Coeficiente normalizado'] == 0 else '', axis=1)
 
     # adiciona uma coluna com a nota de vulnerabilidade socioeconômica
-    df_pontuacao['Pontos (renda)'] = df_pontuacao.apply(lambda row: incode_point[row['Faixa de Renda']] if not pandas.isna(row['Faixa de Renda']) else 1, axis=1)
+    df_pontuacao['Pontos (renda)'] = df_pontuacao.apply(lambda row: incode_point[row['FAIXA_RENDA']] if not pandas.isna(row['FAIXA_RENDA']) else 1, axis=1)
 
     # calcula a pontuação dos candidatos baseados do tipo do PaEPE (I ou II), faixa de renda e o CRN
-    df_pontuacao['Pontuação'] = df_pontuacao.apply(lambda row: calcula_pontuacao(row['PaEPE'], row['Faixa de Renda'], row['Coeficiente normalizado']), axis=1)
+    df_pontuacao['Pontuação'] = df_pontuacao.apply(lambda row: calcula_pontuacao(row['PaEPE'], row['FAIXA_RENDA'], row['Coeficiente normalizado']), axis=1)
 
     # faz a ordenação descendente da pontuação por projeto, mantendo os projetos do mesmo tipo juntos
     df_pontuacao = df_pontuacao.sort_values(['PaEPE', 'Projeto', 'Pontuação'], ascending=[True, True, False])
@@ -109,6 +103,6 @@ if __name__ == '__main__':
         df_pontuacao = df_pontuacao.loc[df_pontuacao['Data de cadastramento'] <= DATA_INSCRICAO_FIM]
 
     # seleciona as colunas que serão exportadas
-    df_pontuacao = df_pontuacao[['PaEPE', 'CPF', 'Nome', 'Projeto', 'Pontuação', 'PPI', 'Coeficiente normalizado', 'Pontos (renda)', 'Faixa de Renda', 'Matrícula', 'Curso', 'E-mail', 'Data de cadastramento', 'OBS']]
+    df_pontuacao = df_pontuacao[['PaEPE', 'CPF', 'Nome', 'Projeto', 'Pontuação', 'TIPO_COTA', 'Coeficiente normalizado', 'Pontos (renda)', 'FAIXA_RENDA', 'Curso', 'E-mail', 'Data de cadastramento', 'OBS']]
     # exporta a lista com a pontuação para o arquivo pontuação.csv
     df_pontuacao.to_csv(path_or_buf='pontuação.csv', date_format="%d/%m/%Y", index=False)
